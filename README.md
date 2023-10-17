@@ -9,7 +9,8 @@
 
 ### Penyelesaian
 Berikut topologi yang kami gunakan:</br>
-![ping-topologi](https://github.com/DaffaZimraan/Jarkom-Modul-2-E24-2023/raw/main/image/ping-topologi.jpg)</br>
+![topologi](https://github.com/DaffaZimraan/Jarkom-Modul-2-E24-2023/tree/main/image/topologi.jpg)</br>
+
 Konfigurasi Pandudewanata:
 ```
 auto eth0
@@ -97,6 +98,7 @@ iface eth0 inet static
 
 ## Soal 2
 ### Pertanyaan
+>Buatlah website utama pada node arjuna dengan akses ke arjuna.yyy.com dengan alias www.arjuna.yyy.com dengan yyy merupakan kode kelompok.
 ### Penyelesaian
 
 ## Soal 3
