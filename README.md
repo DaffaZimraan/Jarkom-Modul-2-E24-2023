@@ -9,7 +9,7 @@
 
 ### Penyelesaian
 Berikut topologi yang kami gunakan:</br>
-![topologi](https://github.com/DaffaZimraan/Jarkom-Modul-2-E24-2023/tree/main/image/topologi.jpg)</br>
+![topologi](https://github.com/DaffaZimraan/Jarkom-Modul-2-E24-2023/raw/main/image/topologi.jpg)</br>
 
 Konfigurasi Pandudewanata:
 ```
@@ -99,6 +99,33 @@ iface eth0 inet static
 ## Soal 2
 ### Pertanyaan
 >Buatlah website utama pada node arjuna dengan akses ke arjuna.yyy.com dengan alias www.arjuna.yyy.com dengan yyy merupakan kode kelompok.
+Tambahkan config sebagai berikut di **/etc/bind/named.conf.local** yudhistira:
+```
+echo 'zone "arjuna.e24.com" {' > /etc/bind/named.conf.local
+echo '        type master;' >> /etc/bind/named.conf.local
+echo '        file "/etc/bind/jarkom/arjuna.e24.com";' >> /etc/bind/named.conf.local
+echo '};' >> /etc/bind/named.conf.local
+echo '' >> /etc/bind/named.conf.local
+```
+Kemudian tambahkan config berikut pada file **/etc/bind/jarkom/arjuna.e24.com** di node Yudhistira:
+```
+echo ';' BIND data file for local loopback interface > /etc/bind/jarkom/arjuna.e24.com
+echo ';' BIND data file for local loopback interface >> /etc/bind/jarkom/arjuna.e24.com
+echo '$TTL    604800' >> /etc/bind/jarkom/arjuna.e24.com
+echo '@       IN      SOA     arjuna.e24.com. root.arjuna.e24.com. (' >> /etc/bind/jarkom/arjuna.e24.com
+echo '                    2023101001      ; Serial' >> /etc/bind/jarkom/arjuna.e24.com
+echo '                     604800         ; Refresh' >> /etc/bind/jarkom/arjuna.e24.com
+echo '                      86400         ; Retry' >> /etc/bind/jarkom/arjuna.e24.com
+echo '                    2419200         ; Expire' >> /etc/bind/jarkom/arjuna.e24.com
+echo '                     604800 )       ; Negative Cache TTL' >> /etc/bind/jarkom/arjuna.e24.com
+echo ';' BIND data file for local loopback interface >> /etc/bind/jarkom/arjuna.e24.com
+echo '@       IN      NS      arjuna.e24.com.' >> /etc/bind/jarkom/arjuna.e24.com
+echo '@       IN      A       192.218.2.2' >> /etc/bind/jarkom/arjuna.e24.com
+echo 'www     IN      CNAME   arjuna.e24.com.' >> /etc/bind/jarkom/arjuna.e24.com
+```
+Berikut hasil ping **arjuna.yyy.com**:</br>
+![ping-arjuna](https://github.com/DaffaZimraan/Jarkom-Modul-2-E24-2023/raw/main/image/ping-arjuna.jpg)</br>
+
 ### Penyelesaian
 
 ## Soal 3
