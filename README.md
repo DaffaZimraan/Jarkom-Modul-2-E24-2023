@@ -237,6 +237,138 @@ listen-on-v6 { any; };
 ### Pertanyaan
 >Arjuna merupakan suatu Load Balancer Nginx dengan tiga worker (yang juga menggunakan nginx sebagai webserver) yaitu Prabakusuma, Abimanyu, dan Wisanggeni. Lakukan deployment pada masing-masing worker.
 ### Penyelesaian
+pada prabakusuma ditambahkan kode berikut
+```
+mkdir /var/www/arjuna.e24.com
+touch /var/www/arjuna.e24.com/index.php
+echo '<?php
+$hostname = gethostname();
+$date = date("Y-m-d H:i:s");
+$php_version = phpversion();
+$username = get_current_user();
+
+echo "Hello World!<br>";
+echo "Saya adalah: $username<br>";
+echo "Saat ini berada di: $hostname<br>";
+echo "Versi PHP yang saya gunakan: $php_version<br>";
+echo "Tanggal saat ini: $date<br>";
+?>' > /var/www/arjuna.e24.com/index.php
+
+touch /etc/nginx/sites-available/arjuna.e24.com
+echo 'server {
+    listen 8001;
+    root /var/www/arjuna.e24.com;
+    index index.php index.html index.htm;
+    server_name _;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    # pass PHP scripts to FastCGI server
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php7.2-fpm.sock;
+    }
+
+    location ~ /\.ht {
+        deny all;
+    }
+
+    error_log /var/log/nginx/arjuna.e24.com_error.log;
+    access_log /var/log/nginx/arjuna.e24.com_access.log;
+}' > /etc/nginx/sites-available/arjuna.e24.com
+
+ln -s /etc/nginx/sites-available/arjuna.e24.com /etc/nginx/sites-enabled
+```
+Sedangkan pada abimanyu ditambahkan kode berikut
+```
+mkdir /var/www/arjuna.e24.com
+touch /var/www/arjuna.e24.com/index.php
+echo '<?php
+$hostname = gethostname();
+$date = date("Y-m-d H:i:s");
+$php_version = phpversion();
+$username = get_current_user();
+
+echo "Hello World!<br>";
+echo "Saya adalah: $username<br>";
+echo "Saat ini berada di: $hostname<br>";
+echo "Versi PHP yang saya gunakan: $php_version<br>";
+echo "Tanggal saat ini: $date<br>";
+?>' > /var/www/arjuna.e24.com/index.php
+
+touch /etc/nginx/sites-available/arjuna.e24.com
+echo 'server {
+    listen 8002;
+    root /var/www/arjuna.e24.com;
+    index index.php index.html index.htm;
+    server_name _;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    # pass PHP scripts to FastCGI server
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php7.2-fpm.sock;
+    }
+
+    location ~ /\.ht {
+        deny all;
+    }
+
+    error_log /var/log/nginx/arjuna.e24.com_error.log;
+    access_log /var/log/nginx/arjuna.e24.com_access.log;
+}' > /etc/nginx/sites-available/arjuna.e24.com
+
+ln -s /etc/nginx/sites-available/arjuna.e24.com /etc/nginx/sites-enabled
+```
+Dan pada Wisanggeni ditambahkan kode berikut
+```
+mkdir /var/www/arjuna.e24.com
+touch /var/www/arjuna.e24.com/index.php
+echo '<?php
+$hostname = gethostname();
+$date = date("Y-m-d H:i:s");
+$php_version = phpversion();
+$username = get_current_user();
+
+echo "Hello World!<br>";
+echo "Saya adalah: $username<br>";
+echo "Saat ini berada di: $hostname<br>";
+echo "Versi PHP yang saya gunakan: $php_version<br>";
+echo "Tanggal saat ini: $date<br>";
+?>' > /var/www/arjuna.e24.com/index.php
+
+touch /etc/nginx/sites-available/arjuna.e24.com
+echo 'server {
+    listen 8003;
+    root /var/www/arjuna.e24.com;
+    index index.php index.html index.htm;
+    server_name _;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    # pass PHP scripts to FastCGI server
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php7.2-fpm.sock;
+    }
+
+    location ~ /\.ht {
+        deny all;
+    }
+
+    error_log /var/log/nginx/arjuna.e24.com_error.log;
+    access_log /var/log/nginx/arjuna.e24.com_access.log;
+}' > /etc/nginx/sites-available/arjuna.e24.com
+
+ln -s /etc/nginx/sites-available/arjuna.e24.com /etc/nginx/sites-enabled
+```
 
 ## Soal 10
 ### Pertanyaan
@@ -246,17 +378,43 @@ listen-on-v6 { any; };
     - Wisanggeni:8003
 
 ### Penyelesaian
+Pada arjuna ditambahkan kode berikut untuk mengatur round robin
+```
+echo '# Default menggunakan Round Robin
+upstream myweb {
+    server 192.218.3.2:8001;
+    server 192.218.3.3:8002;
+    server 192.218.3.4:8003;
+}
+server {
+    listen 80;
+    server_name arjuna.e24.com;
 
+    location / {
+        proxy_pass http://myweb;
+    }
+}' > /etc/nginx/sites-available/lb-arjuna.e24.com
+ln -s /etc/nginx/sites-available/lb-arjuna.e24.com /etc/nginx/sites-enabled
+```
 ## Soal 11
 ### Pertanyaan
 >Selain menggunakan Nginx, lakukan konfigurasi Apache Web Server pada worker Abimanyu dengan web server www.abimanyu.yyy.com. Pertama dibutuhkan web server dengan DocumentRoot pada /var/www/abimanyu.yyy
 ### Penyelesaian
+Untuk mengatur alias maka dibutuhkan kode berikut di dalam konfigurasi abimanyu.e24.com
+```
+echo '    Alias "/home" "/var/www/abimanyu.e24/index.php/home"' >> /etc/apache2/sites-available/000-default.conf
+```
 
 ## Soal 12
 ### Pertanyaan
 >Setelah itu ubahlah agar url www.abimanyu.yyy.com/index.php/home menjadi www.abimanyu.yyy.com/home
 ### Penyelesaian
-
+Agar www.abimanyu.e24.com/index.php/home dapat menjadi www.abimanyu.e24.com/home, maka perlu ada kode sebagai berikut
+```
+echo '    <Directory /var/www/abimanyu.e24/index.php/home>' >> /etc/apache2/sites-available/000-default.conf
+echo '            Options +Indexes' >> /etc/apache2/sites-available/000-default.conf
+echo '    </Directory>' >> /etc/apache2/sites-available/000-default.conf
+```
 ## Soal 13
 ### Pertanyaan
 >Selain itu, pada subdomain www.parikesit.abimanyu.yyy.com, DocumentRoot disimpan pada /var/www/parikesit.abimanyu.yyy
