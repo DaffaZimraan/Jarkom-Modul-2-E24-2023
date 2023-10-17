@@ -261,16 +261,46 @@ listen-on-v6 { any; };
 ### Pertanyaan
 >Selain itu, pada subdomain www.parikesit.abimanyu.yyy.com, DocumentRoot disimpan pada /var/www/parikesit.abimanyu.yyy
 ### Penyelesaian
+Untuk mengambil resources yang akan digunakan parikesit.abimanyu.yyy.com perlu adanya kode berikut.
+```
+wget -O parikesit.abimanyu.yyy.com.zip "https://drive.google.com/uc?export=download&id=1LdbYntiYVF_NVNgJis1GLCLPEGyIOreS"
+unzip parikesit.abimanyu.yyy.com.zip
+mv parikesit.abimanyu.yyy.com parikesit.abimanyu.e24
+mv parikesit.abimanyu.e24 /var/www
+```
+Lalu, untuk konfigurasi parikesit.abimanyu.e24.com, menggunakan kode berikut
+```
+echo '<VirtualHost *:80>' >> /etc/apache2/sites-available/000-default.conf
+echo '    ServerAdmin webmaster@localhost' >> /etc/apache2/sites-available/000-default.conf
+echo '    DocumentRoot /var/www/parikesit.abimanyu.e24' >> /etc/apache2/sites-available/000-default.conf
+echo '    ServerName parikesit.abimanyu.e24.com' >> /etc/apache2/sites-available/000-default.conf
+echo '    ServerAlias www.parikesit.abimanyu.e24.com' >> /etc/apache2/sites-available/000-default.conf
+echo '    <Directory /var/www/parikesit.abimanyu.e24/public>' >> /etc/apache2/sites-available/000-default.conf
+echo '        Options +Indexes' >> /etc/apache2/sites-available/000-default.conf
+echo '    </Directory>' >> /etc/apache2/sites-available/000-default.conf
+echo '</VirtualHost>' >> /etc/apache2/sites-available/000-default.conf
+```
 
 ## Soal 14
 ### Pertanyaan
 >Pada subdomain tersebut folder /public hanya dapat melakukan directory listing sedangkan pada folder /secret tidak dapat diakses (403 Forbidden).
 ### Penyelesaian
+Untuk membatasi folder /secret, perlu adanya pengaturan Deny from all seperti yang tergambar pada kode berikut
+```
+echo '    <Directory /var/www/parikesit.abimanyu.e24/secret>' >> /etc/apache2/sites-available/000-default.conf
+echo '        Deny from all' >> /etc/apache2/sites-available/000-default.conf
+echo '    </Directory>' >> /etc/apache2/sites-available/000-default.conf
+```
 
 ## Soal 15
 ### Pertanyaan
 >Buatlah kustomisasi halaman error pada folder /error untuk mengganti error kode pada Apache. Error kode yang perlu diganti adalah 404 Not Found dan 403 Forbidden.
 ### Penyelesaian
+Berikut adalah kode yang ditambahkan untuk mengatur pesan error
+```
+echo '    ErrorDocument 403 /error/403.html' >> /etc/apache2/sites-available/000-default.conf
+echo '    ErrorDocument 404 /error/404.html' >> /etc/apache2/sites-available/000-default.conf
+```
 
 ## Soal 16
 ### Pertanyaan
@@ -278,7 +308,10 @@ listen-on-v6 { any; };
 www.parikesit.abimanyu.yyy.com/js
 
 ### Penyelesaian
-
+Pada pengaturan di bagian parikesit.abimanyu.e24.com, ditambahkan baris berikut untuk mengatur alias
+```
+echo '    Alias "/js" "/var/www/parikesit.abimanyu.e24/public/js"' >> /etc/apache2/sites-available/000-default.conf
+```
 ## Soal 17
 ### Pertanyaan
 >Agar aman, buatlah konfigurasi agar www.rjp.baratayuda.abimanyu.yyy.com hanya dapat diakses melalui port 14000 dan 14400.
