@@ -283,22 +283,82 @@ www.parikesit.abimanyu.yyy.com/js
 ### Pertanyaan
 >Agar aman, buatlah konfigurasi agar www.rjp.baratayuda.abimanyu.yyy.com hanya dapat diakses melalui port 14000 dan 14400.
 ### Penyelesaian
-
+untuk port 14000
+```
+echo '<VirtualHost *:14000>' >> /etc/apache2/sites-available/000-default.conf
+echo '    ServerAdmin webmaster@localhost' >> /etc/apache2/sites-available/000-default.conf
+echo '    DocumentRoot /var/www/rjp.baratayuda.abimanyu.e24' >> /etc/apache2/sites-available/000-default.conf
+echo '    ServerName rjp.baratayuda.abimanyu.e24.com' >> /etc/apache2/sites-available/000-default.conf
+echo '    ServerAlias www.rjp.baratayuda.abimanyu.e24.com' >> /etc/apache2/sites-available/000-default.conf
+echo '    <Directory /var/www/rjp.baratayuda.abimanyu.e24>' >> /etc/apache2/sites-available/000-default.conf
+echo '        AuthType Basic' >> /etc/apache2/sites-available/000-default.conf
+echo '        AuthName "Restricted Files"' >> /etc/apache2/sites-available/000-default.conf
+echo '        AuthUserFile "/etc/password"' >> /etc/apache2/sites-available/000-default.conf
+echo '        Require user Wayang' >> /etc/apache2/sites-available/000-default.conf
+echo '    </Directory>' >> /etc/apache2/sites-available/000-default.conf
+echo '    ErrorLog ${APACHE_LOG_DIR}/error-14000.log' >> /etc/apache2/sites-available/000-default.conf
+echo '    CustomLog ${APACHE_LOG_DIR}/access-14000.log combined' >> /etc/apache2/sites-available/000-default.conf
+echo '</VirtualHost>' >> /etc/apache2/sites-available/000-default.conf
+```
+Untuk port 14400
+```
+echo '<VirtualHost *:14400>' >> /etc/apache2/sites-available/000-default.conf
+echo '    ServerAdmin webmaster@localhost' >> /etc/apache2/sites-available/000-default.conf
+echo '    DocumentRoot /var/www/rjp.baratayuda.abimanyu.e24' >> /etc/apache2/sites-available/000-default.conf
+echo '    ServerName rjp.baratayuda.abimanyu.e24.com' >> /etc/apache2/sites-available/000-default.conf
+echo '    ServerAlias www.rjp.baratayuda.abimanyu.e24.com' >> /etc/apache2/sites-available/000-default.conf
+echo '    <Directory /var/www/rjp.baratayuda.abimanyu.e24>' >> /etc/apache2/sites-available/000-default.conf
+echo '        AuthType Basic' >> /etc/apache2/sites-available/000-default.conf
+echo '        AuthName "Restricted Files"' >> /etc/apache2/sites-available/000-default.conf
+echo '        AuthUserFile "/etc/password"' >> /etc/apache2/sites-available/000-default.conf
+echo '        Require user Wayang' >> /etc/apache2/sites-available/000-default.conf
+echo '    </Directory>' >> /etc/apache2/sites-available/000-default.conf
+echo '    ErrorLog ${APACHE_LOG_DIR}/error-14400.log' >> /etc/apache2/sites-available/000-default.conf
+echo '    CustomLog ${APACHE_LOG_DIR}/access-14400.log combined' >> /etc/apache2/sites-available/000-default.conf
+echo '</VirtualHost>' >> /etc/apache2/sites-available/000-default.conf
+```
 ## Soal 18
 ### Pertanyaan
 >Untuk mengaksesnya buatlah autentikasi username berupa “Wayang” dan password “baratayudayyy” dengan yyy merupakan kode kelompok. Letakkan DocumentRoot pada /var/www/rjp.baratayuda.abimanyu.yyy.
 
 ### Penyelesaian
+Berikut adalah baris kode untuk membuat password
+```
+htpasswd -bc /etc/password Wayang baratayudae24
+```
+Lalu, diterapkan sebagai berikut
+```
+<Directory /var/www/rjp.baratayuda.abimanyu.e24>' >> /etc/apache2/sites-available/000-default.conf
+echo '        AuthType Basic' >> /etc/apache2/sites-available/000-default.conf
+echo '        AuthName "Restricted Files"' >> /etc/apache2/sites-available/000-default.conf
+echo '        AuthUserFile "/etc/password"' >> /etc/apache2/sites-available/000-default.conf
+echo '        Require user Wayang' >> /etc/apache2/sites-available/000-default.conf
+echo '    </Directory>' >> /etc/apache2/sites-available/000-default.conf
+```
 
 ## Soal 19
 ### Pertanyaan
 >Buatlah agar setiap kali mengakses IP dari Abimanyu akan secara otomatis dialihkan ke www.abimanyu.yyy.com (alias)
 
 ### Penyelesaian
+```
+echo '<VirtualHost *:80>' >> /etc/apache2/sites-available/000-default.conf
+echo '   ServerName 192.218.3.3' >> /etc/apache2/sites-available/000-default.conf
+echo '   Redirect 301 / http://www.abimanyu.e24.com' >> /etc/apache2/sites-available/000-default.conf
+echo '</VirtualHost>' >> /etc/apache2/sites-available/000-default.conf
+```
 
 ## Soal 20
 ### Pertanyaan
 >Karena website www.parikesit.abimanyu.yyy.com semakin banyak pengunjung dan banyak gambar gambar random, maka ubahlah request gambar yang memiliki substring “abimanyu” akan diarahkan menuju abimanyu.png.
 
 ### Penyelesaian
-
+```
+<Directory /var/www/parikesit.abimanyu.e24>' >> /etc/apache2/sites-available/000-default.conf
+echo '        RewriteEngine On' >> /etc/apache2/sites-available/000-default.conf
+echo '        RewriteCond %{REQUEST_URI} \.(jpg|png)$ [NC]' >> /etc/apache2/sites-available/000-default.conf
+echo '        RewriteCond %{REQUEST_URI} abimanyu [NC]' >> /etc/apache2/sites-available/000-default.conf
+echo '        RewriteCond %{REQUEST_URI} !^/public/images/abimanyu\.png [NC]' >> /etc/apache2/sites-available/000-default.conf
+echo '        RewriteRule ^(.*)$ http://www.parikesit.abimanyu.e24.com/public/images/abimanyu.png' >> /etc/apache2/sites-available/000-default.conf
+echo '    </Directory>' >> /etc/apache2/sites-available/000-default.conf
+```
