@@ -99,57 +99,138 @@ iface eth0 inet static
 ## Soal 2
 ### Pertanyaan
 >Buatlah website utama pada node arjuna dengan akses ke arjuna.yyy.com dengan alias www.arjuna.yyy.com dengan yyy merupakan kode kelompok.
+
+### Penyelesaian
 Tambahkan config sebagai berikut di **/etc/bind/named.conf.local** yudhistira:
 ```
-echo 'zone "arjuna.e24.com" {' > /etc/bind/named.conf.local
-echo '        type master;' >> /etc/bind/named.conf.local
-echo '        file "/etc/bind/jarkom/arjuna.e24.com";' >> /etc/bind/named.conf.local
-echo '};' >> /etc/bind/named.conf.local
-echo '' >> /etc/bind/named.conf.local
+echo 'zone "arjuna.e24.com" {
+	type master;
+	file "/etc/bind/jarkom/arjuna.e24.com";
+};' > /etc/bind/named.conf.local
 ```
 Kemudian tambahkan config berikut pada file **/etc/bind/jarkom/arjuna.e24.com** di node Yudhistira:
 ```
-echo ';' BIND data file for local loopback interface > /etc/bind/jarkom/arjuna.e24.com
-echo ';' BIND data file for local loopback interface >> /etc/bind/jarkom/arjuna.e24.com
-echo '$TTL    604800' >> /etc/bind/jarkom/arjuna.e24.com
-echo '@       IN      SOA     arjuna.e24.com. root.arjuna.e24.com. (' >> /etc/bind/jarkom/arjuna.e24.com
-echo '                    2023101001      ; Serial' >> /etc/bind/jarkom/arjuna.e24.com
-echo '                     604800         ; Refresh' >> /etc/bind/jarkom/arjuna.e24.com
-echo '                      86400         ; Retry' >> /etc/bind/jarkom/arjuna.e24.com
-echo '                    2419200         ; Expire' >> /etc/bind/jarkom/arjuna.e24.com
-echo '                     604800 )       ; Negative Cache TTL' >> /etc/bind/jarkom/arjuna.e24.com
-echo ';' BIND data file for local loopback interface >> /etc/bind/jarkom/arjuna.e24.com
-echo '@       IN      NS      arjuna.e24.com.' >> /etc/bind/jarkom/arjuna.e24.com
-echo '@       IN      A       192.218.2.2' >> /etc/bind/jarkom/arjuna.e24.com
-echo 'www     IN      CNAME   arjuna.e24.com.' >> /etc/bind/jarkom/arjuna.e24.com
+mkdir -p /etc/bind/jarkom
+cp /etc/bind/db.local /etc/bind/jarkom/arjuna.e24.com
+sed -i 's/localhost/arjuna.e24.com/g' /etc/bind/jarkom/arjuna.e24.com
+sed -i 's/127.0.0.1/192.218.2.2/g' /etc/bind/jarkom/arjuna.e24.com
+echo 'www.arjuna.e24.com.	IN CNAME arjuna.e24.com.' >> /etc/bind/jarkom/arjuna.e24.com
 ```
 Berikut hasil ping **arjuna.yyy.com**:</br>
 ![ping-arjuna](https://github.com/DaffaZimraan/Jarkom-Modul-2-E24-2023/raw/main/image/ping-arjuna.jpg)</br>
 
-### Penyelesaian
-
 ## Soal 3
 ### Pertanyaan
+>Dengan cara yang sama seperti soal nomor 2, buatlah website utama dengan akses ke abimanyu.yyy.com dan alias www.abimanyu.yyy.com.
+
 ### Penyelesaian
+Tambahkan config sebagai berikut di **/etc/bind/named.conf.local** yudhistira:
+```
+echo 'zone "abimanyu.e24.com" { 
+	type master;
+	file "/etc/bind/jarkom/abimanyu.e24.com";
+};' >> /etc/bind/named.conf.local
+```
+Kemudian tambahkan config berikut pada file **/etc/bind/jarkom/abimanyu.e24.com** di node Yudhistira:
+```
+mkdir -p /etc/bind/jarkom
+cp /etc/bind/db.local /etc/bind/jarkom/abimanyu.e24.com
+sed -i 's/localhost/abimanyu.e24.com/g' /etc/bind/jarkom/abimanyu.e24.com
+sed -i 's/127.0.0.1/192.218.3.3/g' /etc/bind/jarkom/abimanyu.e24.com
+echo 'www.abimanyu.e24.com.	IN CNAME abimanyu.e24.com.' >> /etc/bind/jarkom/abimanyu.e24.com
+```
+Berikut hasil ping **abimanyu.yyy.com:**</br>
+![ping-abimanyu](https://github.com/DaffaZimraan/Jarkom-Modul-2-E24-2023/raw/main/image/ping-abimanyu.jpg)</br>
 
 ## Soal 4
 ### Pertanyaan
+>Kemudian, karena terdapat beberapa web yang harus di-deploy, buatlah subdomain parikesit.abimanyu.yyy.com yang diatur DNS-nya di Yudhistira dan mengarah ke Abimanyu.
 ### Penyelesaian
+Tambahkan config berikut pada file **/etc/bind/jarkom/abimanyu.e24.com**:
+```
+echo 'parikesit       IN      A       192.218.3.3' >> /etc/bind/jarkom/abimanyu.e24.com
+echo 'www.parikesit       IN      CNAME       abimanyu.e24.com.' >> /etc/bind/jarkom/abimanyu.e24.com
+```
+Berikut hasil ping **parikesit.abimanyu.yyy.com**:
+![ping-parikesit](https://github.com/DaffaZimraan/Jarkom-Modul-2-E24-2023/raw/main/image/ping-parikesit.jpg)</br>
 
 ## Soal 5
 ### Pertanyaan
+>Buat juga reverse domain untuk domain utama. (Abimanyu saja yang direverse)
 ### Penyelesaian
+Tambahkan config sebagai berikut di **/etc/bind/named.conf.local** yudhistira
+```
+echo 'zone "3.218.192.in-addr.arpa" {
+	type master;
+	file "/etc/bind/jarkom/3.218.192.in-addr.arpa";
+};' >> /etc/bind/named.conf.local
+```
+Kemudian tambahkan config berikut pada file **/etc/bind/jarkom/3.218.192.in-addr.arpa** di node Yudhistira
+```
+cp /etc/bind/db.local /etc/bind/jarkom/3.218.192.in-addr.arpa
+sed -i 's/localhost/abimanyu.e24.com/g' /etc/bind/jarkom/3.218.192.in-addr.arpa
+sed -i 's/127.0.0.1/192.218.3.3/g' /etc/bind/jarkom/3.218.192.in-addr.arpa
+echo '3.218.192.in-addr.arpa.	IN NS abimanyu.e24.com.' >> /etc/bind/jarkom/3.218.192.in-addr.arpa
+echo '3				IN PTR abimanyu.e24.com.' >> /etc/bind/jarkom/3.218.192.in-addr.arpa
+```
+Berikut hasil reverse domain abimanyu:</br>
+![reverse-abimanyu](https://github.com/DaffaZimraan/Jarkom-Modul-2-E24-2023/raw/main/image/reverse-abimanyu.jpg)</br>
+
 
 ## Soal 6
 ### Pertanyaan
+>Agar dapat tetap dihubungi ketika DNS Server Yudhistira bermasalah, buat juga Werkudara sebagai DNS Slave untuk domain utama.
 ### Penyelesaian
+Tambahkan config sebagai berikut di **/etc/bind/named.conf.local** yudhistira
+```
+echo '        notify yes;' >> /etc/bind/named.conf.local
+echo '        also-notify { 192.218.1.5; };' >> /etc/bind/named.conf.local
+echo '        allow-transfer { 192.218.1.5; };' >> /etc/bind/named.conf.local
+```
+Kemudian tambahkan config sebagai berikut di **/etc/bind/named.conf.local** Werkudara
+```
+echo 'zone "arjuna.e24.com" {
+	type slave;
+	masters { 192.218.1.4; };
+	file "/var/lib/bind/arjuna.e24.com";
+};' >> /etc/bind/named.conf.local
+
+echo 'zone "abimanyu.e24.com" {
+	type slave;
+	masters { 192.218.1.4; };
+	file "/var/lib/bind/abimanyu.e24.com";
+};' >> /etc/bind/named.conf.local
+```
+
+Berikut hasil ping abimanyu.yyy.com dengan service bind9 pada DNS Master dimatikan:
+![bind9-stop](https://github.com/DaffaZimraan/Jarkom-Modul-2-E24-2023/raw/main/image/bind9-stop.jpg)</br>
+![ping-dnsslave](https://github.com/DaffaZimraan/Jarkom-Modul-2-E24-2023/raw/main/image/ping-dnsslave.jpg)</br>
+
 
 ## Soal 7
 ### Pertanyaan
+>Seperti yang kita tahu karena banyak sekali informasi yang harus diterima, buatlah subdomain khusus untuk perang yaitu baratayuda.abimanyu.yyy.com dengan alias www.baratayuda.abimanyu.yyy.com yang didelegasikan dari Yudhistira ke Werkudara dengan IP menuju ke Abimanyu dalam folder Baratayuda.
+
 ### Penyelesaian
+Tambahkan nameserver baru `ns1` pada file /etc/bind/jarkom/abimanyu.e24.com melalui yudhistira
+```
+echo 'ns1     IN      A       192.218.3.3' >> /etc/bind/jarkom/abimanyu.e24.com
+echo 'baratayuda        IN      NS      ns1' >> /etc/bind/jarkom/abimanyu.e24.com
+```
+Setelah menambahkan nameserver, kita akan menambahkan potongan kode yaitu `allow-query{any;};` di Yudhistira maupun Werkudara pada file **/etc/bind/named.conf.options**
+```
+echo 'options {
+	directory "/var/cache/bind";
+allow-query{any;};
+auth-nxdomain no;   
+listen-on-v6 { any; };
+};' > /etc/bind/named.conf.options
+```
+
 
 ## Soal 8
 ### Pertanyaan
+>Untuk informasi yang lebih spesifik mengenai Ranjapan Baratayuda, buatlah subdomain melalui Werkudara dengan akses rjp.baratayuda.abimanyu.yyy.com dengan alias www.rjp.baratayuda.abimanyu.yyy.com yang mengarah ke Abimanyu.
 ### Penyelesaian
 
 ## Soal 9
