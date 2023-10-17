@@ -226,12 +226,38 @@ auth-nxdomain no;
 listen-on-v6 { any; };
 };' > /etc/bind/named.conf.options
 ```
+buat direktori baru `/etc/bind/delegasi` dan file `/etc/bind/delegasi/baratayuda.abimanyu.e24.com` diisi dengan konfigurasi nameserver baratayuda.
+```
+mkdir -p /etc/bind/delegasi
+cp /etc/bind/db.local /etc/bind/delegasi/baratayuda.abimanyu.e24.com
+sed -i 's/localhost/baratayuda.abimanyu.e24.com/g' /etc/bind/delegasi/baratayuda.abimanyu.e24.com
+sed -i 's/127.0.0.1/192.218.3.3/g' /etc/bind/delegasi/baratayuda.abimanyu.e24.com
+echo 'www.baratayuda.abimanyu.e24.com	IN CNAME baratayuda.abimanyu.e24.com.' >> /etc/bind/delegasi/baratayuda.abimanyu.e24.com
+```
+Setelah itu kita masukkan zone baru `baratayuda.abimanyu.e24.com` pada file **/etc/bind/named.conf.local**
+```
+echo 'zone "baratayuda.abimanyu.e24.com" {
+	type master;
+	file "/etc/bind/delegasi/baratayuda.abimanyu.e24.com";
+};' >> /etc/bind/named.conf.local
+```
+Berikut hasil delegasi subdomain:</br>
+![ping-baratayuda](https://github.com/DaffaZimraan/Jarkom-Modul-2-E24-2023/raw/main/image/ping-baratayuda.jpg)</br>
 
 
 ## Soal 8
 ### Pertanyaan
 >Untuk informasi yang lebih spesifik mengenai Ranjapan Baratayuda, buatlah subdomain melalui Werkudara dengan akses rjp.baratayuda.abimanyu.yyy.com dengan alias www.rjp.baratayuda.abimanyu.yyy.com yang mengarah ke Abimanyu.
 ### Penyelesaian
+Tambahkan A dan CNAME pada file **/etc/bind/delegasi/baratayuda.abimanyu.e24.com.**
+```
+echo 'rjp     IN      A       192.218.3.3' >> /etc/bind/delegasi/baratayuda.abimanyu.e24.com
+echo 'www.rjp.baratayuda.abimanyu.e24.com. IN      CNAME   rjp.baratayuda.abimanyu.E14.com.' >> /etc/bind/delegasi/baratayuda.abimanyu.e24.com
+```
+Berikut hasil ping subdomain rjp.baratayuda:</br>
+![ping-rjp1](https://github.com/DaffaZimraan/Jarkom-Modul-2-E24-2023/raw/main/image/ping-rjp1.jpg)</br>
+![ping-rjp2](https://github.com/DaffaZimraan/Jarkom-Modul-2-E24-2023/raw/main/image/ping-rjp2.jpg)</br>
+
 
 ## Soal 9
 ### Pertanyaan
